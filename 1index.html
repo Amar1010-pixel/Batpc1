@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GOTHAM DEFENSE TERMINAL // ZERO-HOUR PROTOCOL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-core: #020204;
+      --panel-bg: rgba(10, 11, 16, 0.92);
+      --border-dim: rgba(255, 183, 3, 0.18);
+      --border-bright: rgba(255, 183, 3, 0.65);
+      --amber: #ffb703;
+      --amber-glow: rgba(255, 183, 3, 0.35);
+      --purple: #9d4edd;
+      --purple-glow: rgba(157, 78, 221, 0.4);
+      --cyan: #00f5d4;
+      --crimson: #ff2a55;
+      --emerald: #10b981;
+      --text-main: #e2e8f0;
+      --text-muted: #64748b;
+      --font-hud: 'Orbitron', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-core);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s ease, color 0.4s ease;
+      position: relative;
+    }
+
+    body.lvl-1 {
+      background: #030303;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 1px, transparent 1px, transparent 3px),
+        radial-gradient(circle at 50% 10%, rgba(255, 140, 0, 0.06), transparent 60%);
+    }
+    body.lvl-1 .hud-panel { border-style: dashed; animation: crt-flicker 6s infinite; }
+
+    body.lvl-2 {
+      background: #040407;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(157, 78, 221, 0.1), transparent 45%),
+        linear-gradient(rgba(255, 183, 3, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 183, 3, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    body.lvl-3 {
+      background: #050509;
+      background-image: 
+        radial-gradient(circle at 85% 15%, rgba(255, 183, 3, 0.1), transparent 45%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 8px);
+    }
+
+    body.lvl-4 {
+      background: #04050a;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(157, 78, 221, 0.16), transparent 60%),
+        radial-gradient(circle at 50% 30%, rgba(255, 183, 3, 0.05) 10%, transparent 11%);
+    }
+    body.lvl-4 .hud-panel { backdrop-filter: blur(12px); background: rgba(12, 14, 24, 0.78); }
+
+    body.lvl-5 {
+      background: #05030a;
+      background-image: 
+        radial-gradient(circle at 0% 50%, rgba(157, 78, 221, 0.2), transparent 50%),
+        radial-gradient(circle at 100% 50%, rgba(255, 183, 3, 0.14), transparent 50%);
+    }
+    body.lvl-5 .hud-panel { border-left: 3px solid var(--purple); border-right: 3px solid var(--amber); }
+
+    body.lvl-6 {
+      background: #030712;
+      background-image: 
+        linear-gradient(rgba(0, 245, 212, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 212, 0.04) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(0, 245, 212, 0.12), transparent 65%);
+      background-size: 24px 24px, 24px 24px, 100% 100%;
+    }
+
+    body.lvl-7 {
+      background: #020205;
+      background-image: 
+        radial-gradient(ellipse at top, rgba(255, 183, 3, 0.18), transparent 60%),
+        radial-gradient(ellipse at bottom, rgba(157, 78, 221, 0.18), transparent 60%);
+    }
+    body.lvl-7 .hud-panel { box-shadow: 0 10px 40px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255, 183, 3, 0.4); }
+
+    body.lvl-8 {
+      background: #040208;
+      background-image: 
+        conic-gradient(from 180deg at 50% 0%, rgba(157, 78, 221, 0.18) 0deg, rgba(255, 183, 3, 0.12) 180deg, rgba(157, 78, 221, 0.18) 360deg);
+    }
+    body.lvl-8 .hud-panel { border-color: rgba(255, 183, 3, 0.45); box-shadow: 0 0 25px rgba(157, 78, 221, 0.2); }
+
+    body.lvl-9 {
+      background: #010103;
+      background-image: 
+        radial-gradient(circle at 50% -10%, rgba(255, 183, 3, 0.28), transparent 55%),
+        radial-gradient(circle at 50% 110%, rgba(157, 78, 221, 0.25), transparent 55%);
+    }
+    body.lvl-9 .hud-panel {
+      border: 1px solid rgba(255, 183, 3, 0.65);
+      box-shadow: 0 0 30px rgba(255, 183, 3, 0.15), inset 0 0 15px rgba(157, 78, 221, 0.12);
+    }
+
+    body.lvl-10 {
+      background: #000000;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 183, 3, 0.35), rgba(157, 78, 221, 0.15) 45%, transparent 75%);
+    }
+    body.lvl-10 .hud-panel {
+      border: 1px solid #ffb703;
+      box-shadow: 0 0 35px rgba(255, 183, 3, 0.25), inset 0 0 20px rgba(255, 183, 3, 0.08);
+    }
+
+    @keyframes crt-flicker {
+      0%, 96%, 98%, 100% { opacity: 1; }
+      97% { opacity: 0.88; }
+      99% { opacity: 0.93; }
+    }
+
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body.penalty-glitch {
+      animation: glitch-shake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+      box-shadow: inset 0 0 120px var(--crimson) !important;
+    }
+    @keyframes glitch-shake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-7px, 2px, 0); }
+      40%, 60% { transform: translate3d(7px, -2px, 0); }
+    }
+
+    .terminal-wrapper {
+      position: relative;
+      z-index: 2;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hud-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-dim);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      transition: all 0.35s ease;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--amber);
+    }
+
+    .doomsday-box {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .doomsday-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--crimson);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--crimson);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--crimson);
+      animation: pulse-blink 1.2s infinite;
+    }
+    @keyframes pulse-blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+    .doomsday-clock {
+      font-family: var(--font-hud);
+      font-size: clamp(14px, 2.5vw, 20px);
+      font-weight: 900;
+      color: var(--amber);
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 15px var(--amber-glow);
+    }
+
+    .clearance-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .level-badge {
+      font-family: var(--font-hud);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, rgba(157, 78, 221, 0.25), rgba(255, 183, 3, 0.25));
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px var(--amber-glow);
+    }
+    .streak-readout {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .streak-readout b { color: var(--cyan); }
+
+    .mode-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mode-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tactical-btn {
+      background: rgba(18, 20, 30, 0.9);
+      border: 1px solid var(--border-dim);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+    .tactical-btn:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+      box-shadow: 0 0 12px rgba(255, 183, 3, 0.2);
+    }
+    .tactical-btn.active-mode {
+      background: rgba(255, 183, 3, 0.18);
+      border-color: var(--amber);
+      color: var(--amber);
+      box-shadow: 0 0 15px var(--amber-glow);
+    }
+    .tactical-btn.medbay-active {
+      background: rgba(0, 245, 212, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+    }
+    .tactical-btn.danger {
+      border-color: rgba(255, 42, 85, 0.4);
+      color: var(--crimson);
+    }
+    .tactical-btn.danger:hover {
+      background: rgba(255, 42, 85, 0.15);
+      border-color: var(--crimson);
+    }
+
+    .xp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .xp-title {
+      font-family: var(--font-hud);
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--amber);
+      letter-spacing: 1px;
+    }
+    .xp-gate-status {
+      font-size: 11px;
+      color: var(--purple);
+      font-weight: 700;
+    }
+    .xp-track {
+      width: 100%;
+      height: 18px;
+      background: #05060a;
+      border: 1px solid var(--border-dim);
+      border-radius: 9px;
+      overflow: hidden;
+      position: relative;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--purple), var(--amber));
+      box-shadow: 0 0 20px var(--amber-glow);
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .xp-sub-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      gap: 6px;
+    }
+
+    .hud-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 860px) {
+      .hud-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel-title {
+      font-family: var(--font-hud);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 6px;
+    }
+    .panel-title span.accent { color: var(--amber); }
+
+    .stream-viewport {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: #000;
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      transition: height 0.35s ease;
+    }
+    .stream-viewport.minimized {
+      height: 36px;
+    }
+    .stream-viewport iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .stream-scanline {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0px, rgba(0,0,0,0.2) 1px, transparent 1px, transparent 3px);
+    }
+    .stream-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .friday-core-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .arc-reactor {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      border: 2px dashed var(--purple);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      box-shadow: inset 0 0 25px var(--purple-glow), 0 0 20px rgba(0,0,0,0.9);
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+    }
+    .arc-reactor.speaking, .arc-reactor.listening {
+      border-color: var(--amber);
+      box-shadow: 0 0 40px var(--amber-glow), inset 0 0 30px var(--purple-glow);
+      animation: spin-reactor 3s linear infinite;
+    }
+    .arc-inner {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--purple) 0%, #05050a 80%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: var(--font-hud);
+      font-size: 10px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 8px #fff;
+    }
+    @keyframes spin-reactor {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.06); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .friday-readout {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-main);
+      background: rgba(5, 6, 10, 0.85);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      width: 100%;
+      min-height: 54px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .friday-input-row {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .tactical-input {
+      background: #06070c;
+      border: 1px solid var(--border-dim);
+      color: var(--text-main);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      flex: 1;
+    }
+    .tactical-input:focus {
+      outline: none;
+      border-color: var(--amber);
+    }
+
+    .timer-readout {
+      font-family: var(--font-hud);
+      font-size: clamp(34px, 6vw, 50px);
+      font-weight: 900;
+      color: var(--amber);
+      text-align: center;
+      letter-spacing: 3px;
+      margin: 8px 0;
+      text-shadow: 0 0 25px var(--amber-glow);
+    }
+    .timer-mission-tag {
+      text-align: center;
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .quest-card {
+      background: rgba(6, 7, 12, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 11px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    .quest-card.completed {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.06);
+      opacity: 0.72;
+    }
+    .quest-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .quest-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .quest-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .xp-pill {
+      color: var(--amber);
+      font-weight: 800;
+      font-size: 11px;
+    }
+    .quest-check {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid var(--amber);
+      background: transparent;
+      color: var(--amber);
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quest-card.completed .quest-check {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #000;
+    }
+
+    .telemetry-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 120px;
+      padding: 12px 8px 4px 8px;
+      background: #05060a;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      gap: 8px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+    .bar-fill {
+      width: 100%;
+      max-width: 34px;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.4s ease;
+      min-height: 4px;
+    }
+    .bar-fill.gold { background: linear-gradient(180deg, var(--amber), #b45309); box-shadow: 0 0 10px var(--amber-glow); }
+    .bar-fill.purple { background: linear-gradient(180deg, var(--purple), #4c1d95); }
+    .bar-fill.crimson { background: var(--crimson); box-shadow: 0 0 10px rgba(255,42,85,0.5); }
+    .bar-val { font-size: 9px; color: var(--text-main); }
+    .bar-day { font-size: 9px; color: var(--text-muted); }
+
+    .arsenal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 12px;
+    }
+    .module-card {
+      background: rgba(7, 8, 14, 0.92);
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(3, 4, 8, 0.92);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 16px;
+      z-index: 5;
+    }
+    .lock-tag {
+      font-family: var(--font-hud);
+      font-size: 11px;
+      color: var(--crimson);
+      border: 1px solid var(--crimson);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      letter-spacing: 1.5px;
+    }
+
+    .floating-xp {
+      position: fixed;
+      font-family: var(--font-hud);
+      font-weight: 900;
+      font-size: 16px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: float-up 1.2s ease-out forwards;
+    }
+    @keyframes float-up {
+      0% { opacity: 1; transform: translateY(0) scale(0.9); }
+      50% { opacity: 1; transform: translateY(-35px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-70px) scale(1); }
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-box {
+      max-width: 520px;
+      width: 100%;
+      background: #070810;
+      border: 2px solid var(--amber);
+      border-radius: 14px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: 0 0 60px var(--amber-glow), inset 0 0 30px var(--purple-glow);
+    }
+
+    body.lockdown-active .hide-on-lockdown {
+      display: none !important;
+    }
+    body.lockdown-active .timer-readout {
+      font-size: 84px;
+    }
+  </style>
+</head>
+<body class="lvl-1">
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="modal-backdrop" id="levelModal">
+  <div class="modal-box">
+    <div style="font-family:var(--font-hud); font-size:11px; color:var(--purple); letter-spacing:3px; margin-bottom:8px;">SECURITY CLEARANCE ELEVATED</div>
+    <div id="modalLevelTitle" style="font-family:var(--font-hud); font-size:26px; font-weight:900; color:var(--amber); margin-bottom:12px; text-shadow:0 0 20px var(--amber);">LVL 2: SHADOW INITIATE</div>
+    <p id="modalLevelDesc" style="font-size:12px; color:var(--text-main); line-height:1.6; margin-bottom:20px;">New tactical subsystems and visual armor upgrades are now online. Do not let up, Boss.</p>
+    <button class="tactical-btn active-mode" onclick="closeLevelModal()" style="width:100%; padding:12px;">ENGAGE NEW CLEARANCE</button>
+  </div>
+</div>
+
+<div class="terminal-wrapper">
+
+  <div class="hud-panel top-bar">
+    <div class="doomsday-box">
+      <div class="doomsday-label"><span class="pulse-dot"></span> GOTHAM DOOMSDAY CLOCK // ZERO-HOUR: MAY 2, 2027</div>
+      <div class="doomsday-clock" id="doomsdayClock">198 DAYS : 00 HRS : 00 MINS : 00 SECS</div>
+    </div>
+    <div class="clearance-box">
+      <div class="level-badge" id="topLevelBadge">[LVL 1: THE DRIFTER]</div>
+      <div class="streak-readout">Consistency: <b id="streakDays">1 Active Day</b> • Combat Rating ($R_c$): <b id="topRcDisplay">0</b></div>
+    </div>
+  </div>
+
+  <div class="hud-panel mode-bar hide-on-lockdown">
+    <div class="mode-toggles">
+      <button class="tactical-btn" id="medbayBtn" onclick="toggleMedBay()">✚ MED-BAY STASIS</button>
+      <button class="tactical-btn" id="fortressBtn" onclick="toggleBoardFortress()">🛡️ BOARD FORTRESS</button>
+      <button class="tactical-btn" onclick="toggleLockdown()">🔒 LOCKDOWN FOCUS</button>
+      <button class="tactical-btn danger" onclick="triggerPenalty(-80, 'Unexcused Protocol Breach')">⚠️ ABORT / BREACH (-80 XP)</button>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <span style="font-size:10px; color:var(--text-muted);">VISUAL TIER OVERRIDE:</span>
+      <select id="themeOverrideSelect" class="tactical-input" style="padding:4px 8px; flex:none; width:auto;" onchange="applyVisualTheme()">
+        <option value="auto">Auto (Match Earned Level)</option>
+        <option value="1">LVL 1: The Drifter</option>
+        <option value="2">LVL 2: Shadow Initiate</option>
+        <option value="3">LVL 3: Street Operative</option>
+        <option value="4">LVL 4: Arkham Sentinel</option>
+        <option value="5">LVL 5: Tactical Enforcer</option>
+        <option value="6">LVL 6: The Detective</option>
+        <option value="7">LVL 7: Gotham Vanguard</option>
+        <option value="8">LVL 8: The Caped Crusader</option>
+        <option value="9">LVL 9: Wayne Masterframe</option>
+        <option value="10">LVL 10: The Dark Knight</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="hud-panel hide-on-lockdown">
+    <div class="xp-header">
+      <div class="xp-title" id="xpTextReadout">CURRENT XP: 0 / 1,000 XP TO LEVEL 2</div>
+      <div class="xp-gate-status" id="rcGateReadout">NEXT GATE KEY: Rc ≥ 420 [SECTOR CALIBRATION]</div>
+    </div>
+    <div class="xp-track">
+      <div class="xp-fill" id="xpBarFill"></div>
+    </div>
+    <div class="xp-sub-meta">
+      <span id="surplusStatus">Surplus Reserve: 0 XP</span>
+      <span id="ftsLockNotice">Levels 7–10 Require Grand Raid Validation • Level 10 Gated to Final 10 Days</span>
+    </div>
+  </div>
+
+  <div class="hud-grid">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+
+      <div class="hud-panel hide-on-lockdown">
+        <div class="panel-title">
+          <span>GOTHAM LIVE SURVEILLANCE FEED (1-HR STREAM)</span>
+          <span class="accent" id="streamStateLabel">ONLINE</span>
+        </div>
+        <div class="stream-viewport" id="streamViewport">
+          <div id="ytPlayerContainer" style="width:100%; height:100%;"></div>
+          <div class="stream-scanline"></div>
+        </div>
+        <div class="stream-controls">
+          <button class="tactical-btn" onclick="ytTogglePlay()" id="ytPlayBtn">⏯ PAUSE / PLAY</button>
+          <button class="tactical-btn" onclick="ytToggleMute()" id="ytMuteBtn">🔇 MUTE / UNMUTE</button>
+          <button class="tactical-btn" onclick="toggleStreamMinimize()">🗕 MINIMIZE / EXPAND</button>
+          <input type="text" id="customYtInput" class="tactical-input" placeholder="Paste YouTube URL or ID...">
+          <button class="tactical-btn" onclick="loadCustomYouTube()">LOAD</button>
+        </div>
+      </div>
+
+      <div class="hud-panel">
+        <div class="panel-title">
+          <span>UNIVERSAL TACTICAL CHRONOMETER</span>
+          <span class="accent" onclick="toggleLockdown()" style="cursor:pointer;">[EXPAND HUD]</span>
+        </div>
+        <div class="timer-mission-tag" id="activeTimerTitle">STANDBY PROTOCOL</div>
+        <div class="timer-readout" id="mainTimerDisplay">00:00:00</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:10px;">
+          <button class="tactical-btn" onclick="startTacticalTimer(45, 'SECTOR ALPHA: PHYSICS SPRINT')">45m Physics</button>
+          <button class="tactical-btn" onclick="startTacticalTimer(60, 'SECTOR BETA/GAMMA RECON')">60m Core</button>
+          <button class="tactical-btn" onclick="startTacticalTimer(15, 'TACTICAL BREATHER')">15m Breather</button>
+          <button class="tactical-btn" onclick="startTacticalTimer(180, '3-HOUR WAR SIMULATOR')">180m Raid</button>
+          <button class="tactical-btn danger" onclick="resetTacticalTimer()">RESET</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <input type="number" id="customTimerMins" class="tactical-input" placeholder="Mins (e.g. 25)" style="max-width:110px;">
+          <input type="text" id="customTimerName" class="tactical-input" placeholder="Custom Operation Name (XYZ)...">
+          <button class="tactical-btn active-mode" onclick="startCustomInputTimer()">START</button>
+        </div>
+      </div>
+
+      <div class="hud-panel hide-on-lockdown">
+        <div class="panel-title">
+          <span>COMBAT CALIBRATION & 3-HOUR RAID LOG</span>
+          <span class="accent">MULTIPLIERS: 0.83x | 0.93x | 1.00x</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+          <select id="raidTypeSelect" class="tactical-input">
+            <option value="TT">Tier 1: Sector Drill (TT - 0.83x)</option>
+            <option value="PST" selected>Tier 2: Sector Infiltration (PST - 0.93x)</option>
+            <option value="FTS">Tier 3: Apex Grand Raid (FTS - 1.00x)</option>
+          </select>
+          <input type="number" id="raidRawInput" class="tactical-input" placeholder="Raw Score (Max 720)" max="720" min="0">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+          <select id="raidVelocitySelect" class="tactical-input">
+            <option value="180">Standard Extraction (180m -> +180 XP)</option>
+            <option value="170">Tier 1 Velocity (≤170m -> +220 XP)</option>
+            <option value="160">Tier 2 Velocity (≤160m -> +260 XP)</option>
+            <option value="150">Apex Velocity (≤150m -> +300 XP)</option>
+          </select>
+          <button class="tactical-btn active-mode" onclick="submitCombatRaid()">CALIBRATE & LOG RAID</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.06);">
+          <span>Post-Raid Mandatory Error Autopsy:</span>
+          <button class="tactical-btn" onclick="claimPostRaidAutopsy()">CLAIM RAID AUTOPSY (+250 XP)</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px;" class="hide-on-lockdown">
+
+      <div class="hud-panel">
+        <div class="panel-title">
+          <span>FRIDAY // TACTICAL NEURAL AI</span>
+          <span class="accent" id="weatherBadge" onclick="fetchWeatherBriefing()" style="cursor:pointer;">📡 WEATHER RECON</span>
+        </div>
+        <div class="friday-core-wrap">
+          <div class="arc-reactor" id="arcReactorBtn" onclick="triggerVoiceRecognition()">
+            <div class="arc-inner">FRIDAY</div>
+          </div>
+          <div class="friday-readout" id="fridayReadout">
+            <b style="color:var(--amber);">FRIDAY:</b> "Systems online, Boss. Tap the reactor to issue voice commands or ask any doubt below."
+          </div>
+          <div class="friday-input-row">
+            <input type="text" id="fridayQueryInput" class="tactical-input" placeholder="Ask Friday a doubt or command..." onkeydown="if(event.key==='Enter')handleFridayCommand()">
+            <button class="tactical-btn active-mode" onclick="handleFridayCommand()">SEND</button>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; width:100%;">
+            <button class="tactical-btn" style="flex:1;" onclick="triggerVoiceRecognition()">🎙️ VOICE LINK</button>
+            <button class="tactical-btn" style="flex:1;" onclick="runMorningBriefing()">⚡ BRIEFING</button>
+            <button class="tactical-btn" style="flex:1;" onclick="checkUpcomingSchedule(3)">📅 3-DAY RECON</button>
+            <button class="tactical-btn" onclick="toggleApiSettings()">⚙️ NEURAL KEY</button>
+          </div>
+          <div id="apiSettingsDrawer" style="display:none; width:100%; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-dim); text-align:left;">
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">GEMINI API KEY:</div>
+            <div style="display:flex; gap:6px;">
+              <input type="password" id="geminiKeyInput" class="tactical-input" placeholder="Paste AI Studio Gemini API Key...">
+              <button class="tactical-btn" onclick="saveGeminiKey()">SAVE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-panel">
+        <div class="panel-title">
+          <span>DAILY COMBAT DUTIES // FRICTION-WEIGHTED</span>
+          <span class="accent" id="dailyDutyCount">0 / 4 SECURED</span>
+        </div>
+        <div class="quest-list" id="coreQuestList"></div>
+
+        <div id="boardFortressPanel" style="display:none; margin-bottom:12px; padding:10px; border:1px solid var(--amber); border-radius:8px; background:rgba(255,183,3,0.06);">
+          <div style="font-size:11px; font-weight:800; color:var(--amber); margin-bottom:8px;">🛡️ BOARD FORTRESS ACTIVE</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <button class="tactical-btn" onclick="awardXP(45, 'Subjective Theory Hour Logged')">+60m Subjective Theory (+45 XP)</button>
+            <button class="tactical-btn" onclick="awardXP(60, 'Lifeline Tether 30m Core Drill')">⚡ 30m Lifeline Tether (+60 XP)</button>
+            <button class="tactical-btn" onclick="awardXP(160, '3-Hour Subjective Board Paper Raid')">📄 3h Sample Paper (+160 XP)</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <input type="text" id="newQuestTitle" class="tactical-input" placeholder="Inject Custom Operation...">
+          <input type="number" id="newQuestXP" class="tactical-input" placeholder="XP" value="60" style="max-width:75px;">
+          <button class="tactical-btn active-mode" onclick="addCustomQuest()">[+]</button>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="tactical-btn" style="flex:1; font-size:10px;" onclick="awardXP(40, 'Board Side-Quest Slot')">📚 Board Side-Quest (+40 XP)</button>
+          <button class="tactical-btn" style="flex:1; font-size:10px;" onclick="completeDayCycle()">🌙 LOG EOD & ADVANCE DAY</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="hud-grid hide-on-lockdown">
+    <div class="hud-panel">
+      <div class="panel-title">
+        <span>7-DAY TELEMETRY MATRIX (DAILY NET XP)</span>
+        <span class="accent">TARGET: ≥300 XP/DAY</span>
+      </div>
+      <div class="telemetry-bars" id="telemetryGraph"></div>
+    </div>
+
+    <div class="hud-panel">
+      <div class="panel-title">
+        <span>TACTICAL FLIGHT PLAN // SCHEDULE ROSTER</span>
+        <span class="accent" id="rosterCountLabel">UPCOMING OPS</span>
+      </div>
+      <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+        <input type="date" id="schedDateInput" class="tactical-input" style="max-width:135px;">
+        <input type="text" id="schedTitleInput" class="tactical-input" placeholder="Operation / Test Subject...">
+        <select id="schedTypeInput" class="tactical-input" style="max-width:95px;">
+          <option value="TT">TT</option>
+          <option value="PST">PST</option>
+          <option value="FTS">FTS</option>
+          <option value="BOARD">BOARD</option>
+        </select>
+        <button class="tactical-btn active-mode" onclick="addScheduleEvent()">ADD</button>
+      </div>
+      <div id="scheduleListContainer" style="display:flex; flex-direction:column; gap:6px; max-height:110px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <div class="hud-panel hide-on-lockdown">
+    <div class="panel-title">
+      <span>PROGRESSIVE LEVEL-UNLOCKED TACTICAL ARSENAL (LVL 1 → LVL 10)</span>
+      <label style="font-size:10px; cursor:pointer; display:flex; align-items:center; gap:5px; color:var(--amber);">
+        <input type="checkbox" id="sandboxUnlockToggle" onchange="renderAll()"> [SANDBOX: PREVIEW ALL UNLOCKED]
+      </label>
+    </div>
+
+    <div class="arsenal-grid">
+
+      <div class="module-card" id="mod-lvl-2">
+        <div class="panel-title"><span>LVL 2 // THE AUTOPSY VAULT</span><span class="accent">+25 XP / LOG</span></div>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:8px;">Tag defects immediately:</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+          <button class="tactical-btn" onclick="logAutopsyDefect('calc')">🔢 Calc Trap (<span id="def-calc">0</span>)</button>
+          <button class="tactical-btn" onclick="logAutopsyDefect('ncert')">📖 Concept Miss (<span id="def-ncert">0</span>)</button>
+          <button class="tactical-btn" onclick="logAutopsyDefect('formula')">⚡ Formula Slip (<span id="def-formula">0</span>)</button>
+          <button class="tactical-btn" onclick="logAutopsyDefect('panic')">⏱️ Time Panic (<span id="def-panic">0</span>)</button>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-3">
+        <div class="panel-title"><span>LVL 3 // 35s BLITZ PACER</span><span class="accent" id="blitzCounter">Q: 0</span></div>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:8px;">Acoustic 35-second per-question metronome.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div id="blitzTimerReadout" style="font-family:var(--font-hud); font-size:24px; color:var(--cyan); font-weight:900;">35s</div>
+          <div style="display:flex; gap:6px;">
+            <button class="tactical-btn active-mode" id="blitzToggleBtn" onclick="toggleBlitzPacer()">ENGAGE</button>
+            <button class="tactical-btn" onclick="resetBlitzPacer()">RESET</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-4">
+        <div class="panel-title"><span>LVL 4 // FORMULA FORGE</span><span class="accent">+15 XP</span></div>
+        <div id="formulaPromptBox" style="font-size:11px; color:var(--amber); font-weight:700; min-height:36px; margin-bottom:6px;">Tap "DRAW" for flash drill.</div>
+        <div id="formulaAnswerBox" style="font-size:11px; color:var(--cyan); display:none; margin-bottom:8px; padding:6px; background:#040508; border-radius:4px;"></div>
+        <div style="display:flex; gap:6px;">
+          <button class="tactical-btn" style="flex:1;" onclick="drawRandomFormula()">🎲 DRAW</button>
+          <button class="tactical-btn" style="flex:1;" onclick="revealFormula()">👁️ REVEAL</button>
+          <button class="tactical-btn active-mode" style="flex:1;" onclick="masterFormula()">✓ LOCKED</button>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-5">
+        <div class="panel-title"><span>LVL 5 // BACKLOG EXTERMINATOR</span><span class="accent" id="totalBacklogBadge">DEBT: 18</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:11px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Alpha (Physics): <b id="bl-phy">8</b> ch</span>
+            <button class="tactical-btn" style="padding:4px 8px; font-size:10px;" onclick="liquidateBacklog('phy', 150)">LIQUIDATE (+150)</button>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Beta (Chemistry): <b id="bl-chem">6</b> ch</span>
+            <button class="tactical-btn" style="padding:4px 8px; font-size:10px;" onclick="liquidateBacklog('chem', 110)">LIQUIDATE (+110)</button>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Gamma (Biology): <b id="bl-bio">4</b> ch</span>
+            <button class="tactical-btn" style="padding:4px 8px; font-size:10px;" onclick="liquidateBacklog('bio', 80)">LIQUIDATE (+80)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-6">
+        <div class="panel-title"><span>LVL 6 // SECTOR MASTERY RADAR</span><span class="accent">TELEMETRY</span></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <svg id="radarSvg" width="100" height="100" viewBox="0 0 100 100" style="background:#040509; border-radius:50%; border:1px solid var(--border-dim);">
+            <polygon points="50,10 90,50 50,90 10,50" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <polygon points="50,25 75,50 50,75 25,50" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <polygon id="radarPolygon" points="50,25 70,50 50,80 30,50" fill="rgba(255,183,3,0.28)" stroke="#ffb703" stroke-width="2"/>
+          </svg>
+          <div style="flex:1; font-size:10px; display:flex; flex-direction:column; gap:4px;">
+            <div>Alpha: <input type="range" min="10" max="45" value="25" id="rad-p" oninput="updateRadar()" style="width:70px;"></div>
+            <div>Chem-P: <input type="range" min="10" max="45" value="30" id="rad-pc" oninput="updateRadar()" style="width:70px;"></div>
+            <div>Chem-O: <input type="range" min="10" max="45" value="32" id="rad-oc" oninput="updateRadar()" style="width:70px;"></div>
+            <div>Biology: <input type="range" min="10" max="45" value="38" id="rad-b" oninput="updateRadar()" style="width:70px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-7">
+        <div class="panel-title"><span>LVL 7 // ACOUSTIC FOCUS SHIELD</span><span class="accent" id="freqStatus">OFF</span></div>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:8px;">432Hz Focus Drone & Brown Noise.</p>
+        <div style="display:flex; gap:6px;">
+          <button class="tactical-btn" style="flex:1;" id="droneBtn" onclick="toggleFocusAudio('drone')">〰️ 432Hz</button>
+          <button class="tactical-btn" style="flex:1;" id="brownBtn" onclick="toggleFocusAudio('brown')">🌊 CAVE</button>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-8">
+        <div class="panel-title"><span>LVL 8 // 14:00–17:00 WAR ROOM</span><span class="accent">SYNC</span></div>
+        <p style="font-size:10px; color:var(--text-muted); margin-bottom:8px;">180-minute Zero-Hour afternoon combat window.</p>
+        <button class="tactical-btn active-mode" style="width:100%;" onclick="engageWarRoomSync()">⚔️ ENGAGE 180m LOCKDOWN</button>
+      </div>
+
+      <div class="module-card" id="mod-lvl-9">
+        <div class="panel-title"><span>LVL 9 // ZERO-HOUR TRAJECTORY</span><span class="accent">PREDICTOR</span></div>
+        <div id="trajectoryReadout" style="font-size:11px; color:var(--text-main); line-height:1.5;">
+          Current Rc: <b style="color:var(--amber);" id="trajRc">0</b><br>
+          Target Gate: <b style="color:var(--cyan);">670</b><br>
+          Status: <span id="trajVerdict" style="color:var(--purple);">Awaiting telemetry...</span>
+        </div>
+      </div>
+
+      <div class="module-card" id="mod-lvl-10">
+        <div class="panel-title"><span>LVL 10 // SOVEREIGN GOD-MODE</span><span class="accent">APEX</span></div>
+        <p style="font-size:10px; color:var(--amber); margin-bottom:8px;">24K Gold Ember Physics Unlocked.</p>
+        <button class="tactical-btn active-mode" style="width:100%;" onclick="speakFriday('Sovereign protocol verified, Boss.')">🦇 SOVEREIGN SALUTE</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="hud-panel hide-on-lockdown" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:10px; color:var(--text-muted);">
+    <span>BATCOMPUTER MASTER ENGINE v4.0 // ENCRYPTED</span>
+    <div style="display:flex; gap:8px;">
+      <button class="tactical-btn" style="padding:5px 10px; font-size:10px;" onclick="exportBackup()">📋 EXPORT</button>
+      <button class="tactical-btn" style="padding:5px 10px; font-size:10px;" onclick="importBackup()">📥 IMPORT</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const ZERO_HOUR_DATE = new Date('2027-05-02T09:00:00+05:30').getTime();
+  const APRIL_LOCK_DATE = new Date('2027-04-22T00:00:00+05:30').getTime();
+
+  const LEVEL_MATRIX = [
+    { lvl: 1, title: "THE DRIFTER", xpReq: 0, rcReq: 0, reqFts: false },
+    { lvl: 2, title: "SHADOW INITIATE", xpReq: 1000, rcReq: 420, reqFts: false },
+    { lvl: 3, title: "STREET OPERATIVE", xpReq: 3000, rcReq: 445, reqFts: false },
+    { lvl: 4, title: "ARKHAM SENTINEL", xpReq: 6500, rcReq: 470, reqFts: false },
+    { lvl: 5, title: "TACTICAL ENFORCER", xpReq: 12000, rcReq: 500, reqFts: false },
+    { lvl: 6, title: "THE DETECTIVE", xpReq: 20000, rcReq: 535, reqFts: false },
+    { lvl: 7, title: "GOTHAM VANGUARD", xpReq: 31000, rcReq: 575, reqFts: true },
+    { lvl: 8, title: "THE CAPED CRUSADER", xpReq: 45000, rcReq: 615, reqFts: true },
+    { lvl: 9, title: "WAYNE MASTERFRAME", xpReq: 55000, rcReq: 645, reqFts: true },
+    { lvl: 10, title: "THE DARK KNIGHT", xpReq: 60000, rcReq: 670, reqFts: true }
+  ];
+
+  const FORMULA_VAULT = [
+    { q: "Magnetic Field at center of circular loop of radius R carrying current I?", a: "B = (μ₀ · I) / (2R)" },
+    { q: "De Broglie Wavelength in terms of Kinetic Energy (K)?", a: "λ = h / √(2mK)" },
+    { q: "Moment of Inertia of a solid sphere about its diameter?", a: "I = (2/5) M R²" },
+    { q: "Escape Velocity from surface of planet of mass M and radius R?", a: "v_e = √(2GM / R) = √(2gR)" },
+    { q: "Electric Potential Energy of a dipole in uniform electric field?", a: "U = -p · E cos(θ)" },
+    { q: "Lens Maker's Formula for thin lens?", a: "1/f = (μ₂/μ₁ - 1) · (1/R₁ - 1/R₂)" },
+    { q: "Work done in an Adiabatic expansion?", a: "W = (P₁V₁ - P₂V₂) / (γ - 1)" }
+  ];
+
+  const STORAGE_KEY = 'gotham_terminal_master_v4';
+
+  let state = {
+    xp: 0,
+    level: 1,
+    streak: 1,
+    highestRc: 0,
+    lastRc: 0,
+    ftsValidated: false,
+    medBay: false,
+    boardFortress: false,
+    todayComboClaimed: false,
+    ytVideoId: 'Sg8x24x2b5E',
+    geminiKey: '',
+    defects: { calc: 0, ncert: 0, formula: 0, panic: 0 },
+    backlogs: { phy: 8, chem: 6, bio: 4 },
+    quests: [
+      { id: 'alpha', title: 'Sector Alpha (Physics): 20 Formula Drills', sub: '45m Timed Sprint • High Friction (1.85x)', xp: 110, done: false, core: true },
+      { id: 'beta', title: 'Sector Beta (Chemistry): 30 Qs + High-Yield Recon', sub: '60m Timed Sprint • Medium Friction (1.35x)', xp: 80, done: false, core: true },
+      { id: 'gamma', title: 'Sector Gamma (Biology): 5 Pages + 30 PYQs', sub: '60m Timed Sprint • Rapid Recon (1.0x)', xp: 60, done: false, core: true },
+      { id: 'omega', title: 'Sector Omega: Daily Error Autopsy', sub: '30m Defect Liquidation & Vault Logging', xp: 70, done: false, core: true }
+    ],
+    history7Days: [
+      { day: 'D-6', xp: 240 },
+      { day: 'D-5', xp: 320 },
+      { day: 'D-4', xp: 180 },
+      { day: 'D-3', xp: 380 },
+      { day: 'D-2', xp: 310 },
+      { day: 'D-1', xp: 290 },
+      { day: 'TODAY', xp: 0 }
+    ],
+    schedule: [
+      { date: '2026-10-20', title: 'Sector Alpha & Beta Term Drill', type: 'TT' },
+      { date: '2026-10-28', title: 'Part Syllabus Infiltration 02', type: 'PST' },
+      { date: '2026-12-08', title: 'Subjective Pre-Board Operations', type: 'BOARD' }
+    ],
+    timerEnd: null,
+    timerLabel: 'STANDBY PROTOCOL'
+  };
+
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playGauntletDing(isCrit = false) {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'triangle';
+      osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(isCrit ? 1174.66 : 880, now);
+      osc1.frequency.exponentialRampToValueAtTime(isCrit ? 2349.32 : 1760, now + 0.14);
+
+      osc2.frequency.setValueAtTime(isCrit ? 1760 : 1318.5, now);
+      osc2.frequency.exponentialRampToValueAtTime(isCrit ? 3520 : 2637, now + 0.22);
+
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.45);
+      osc2.stop(now + 0.45);
+    } catch (e) {}
+  }
+
+  function playPenaltyBuzz() {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(130, now);
+      osc.frequency.linearRampToValueAtTime(75, now + 0.35);
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch (e) {}
+  }
+
+  function playLevelUpFanfare() {
+    try {
+      const ctx = getAudioCtx();
+      const notes = [440, 554.37, 659.25, 880, 1108.73];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        const start = ctx.currentTime + idx * 0.09;
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.2, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.5);
+      });
+    } catch (e) {}
+  }
+
+  function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        state = { ...state, ...parsed };
+      } catch (e) {}
+    }
+    if (state.geminiKey) {
+      document.getElementById('geminiKeyInput').value = state.geminiKey;
+    }
+    evaluateLevelProgression(false);
+    renderAll();
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function evaluateLevelProgression(announce = true) {
+    const oldLevel = state.level;
+    let qualifiedLevel = 1;
+    const now = Date.now();
+
+    for (const tier of LEVEL_MATRIX) {
+      const hasXP = state.xp >= tier.xpReq;
+      const hasRc = state.highestRc >= tier.rcReq;
+      const hasFts = !tier.reqFts || state.ftsValidated;
+      const hasAprilGate = tier.lvl < 10 || (now >= APRIL_LOCK_DATE);
+
+      if (hasXP && hasRc && hasFts && hasAprilGate) {
+        qualifiedLevel = tier.lvl;
+      }
+    }
+
+    state.level = qualifiedLevel;
+    saveState();
+
+    if (announce && qualifiedLevel > oldLevel) {
+      const tierObj = LEVEL_MATRIX.find(t => t.lvl === qualifiedLevel);
+      playLevelUpFanfare();
+      document.getElementById('modalLevelTitle').innerText = `LVL ${tierObj.lvl}:${tierObj.title}`;
+      document.getElementById('modalLevelDesc').innerText = `Clearance authorization elevated to Level ${tierObj.lvl}.`;
+      document.getElementById('levelModal').classList.add('show');
+      speakFriday(`Security clearance elevated. Welcome to Level ${tierObj.lvl}:${tierObj.title}, Boss.`);
+    } else if (announce && qualifiedLevel < oldLevel) {
+      const tierObj = LEVEL_MATRIX.find(t => t.lvl === qualifiedLevel);
+      playPenaltyBuzz();
+      speakFriday(`System breach demotion. Clearance stripped to Level ${tierObj.lvl}:${tierObj.title}.`);
+    }
+  }
+
+  function closeLevelModal() {
+    document.getElementById('levelModal').classList.remove('show');
+    renderAll();
+  }
+
+  function spawnFloatingXP(text, color = '#ffb703') {
+    const el = document.createElement('div');
+    el.className = 'floating-xp';
+    el.style.color = color;
+    el.style.left = (window.innerWidth / 2 + (Math.random() * 120 - 60)) + 'px';
+    el.style.top = (window.innerHeight / 2) + 'px';
+    el.innerText = text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
+
+  function awardXP(amount, reason = 'Mission Cleared', allowCrit = true) {
+    let finalAmount = amount;
+    let critTriggered = false;
+
+    if (allowCrit && amount >= 60 && Math.random() < 0.15) {
+      finalAmount += 50;
+      critTriggered = true;
+    }
+
+    state.xp = Math.max(0, state.xp + finalAmount);
+    state.history7Days[state.history7Days.length - 1].xp += finalAmount;
+
+    playGauntletDing(critTriggered);
+    spawnFloatingXP(critTriggered ? `⚡ CRIT! +${finalAmount} XP` : `+${finalAmount} XP`, critTriggered ? '#00f5d4' : '#ffb703');
+
+    if (critTriggered) {
+      speakFriday(`Critical execution velocity! ${finalAmount} XP banked including 50 bonus XP for${reason}, Boss.`);
+    } else {
+      speakFriday(`Target liquidated. ${finalAmount} XP credited to mainframe for${reason}.`);
+    }
+
+    evaluateLevelProgression(true);
+    renderAll();
+  }
+
+  function triggerPenalty(amount, reason = 'Protocol Violation') {
+    if (state.medBay) {
+      speakFriday(`Med-Bay Stasis Shield active, Boss. Penalty suppressed.`);
+      return;
+    }
+    const deduct = Math.abs(amount);
+    state.xp = Math.max(0, state.xp - deduct);
+    state.history7Days[state.history7Days.length - 1].xp -= deduct;
+
+    playPenaltyBuzz();
+    document.body.classList.add('penalty-glitch');
+    setTimeout(() => document.body.classList.remove('penalty-glitch'), 500);
+    spawnFloatingXP(`-${deduct} XP`, '#ff2a55');
+
+    speakFriday(`Protocol failure: ${reason}.${deduct} XP deducted from clearance reserve.`);
+    evaluateLevelProgression(true);
+    renderAll();
+  }
+
+  function submitCombatRaid() {
+    const type = document.getElementById('raidTypeSelect').value;
+    const rawVal = parseFloat(document.getElementById('raidRawInput').value);
+    const velMins = parseInt(document.getElementById('raidVelocitySelect').value, 10);
+
+    if (isNaN(rawVal) || rawVal < 0 || rawVal > 720) {
+      speakFriday('Invalid simulation input, Boss. Enter a valid score between 0 and 720.');
+      return;
+    }
+
+    let coeff = 0.93;
+    if (type === 'TT') coeff = 0.83;
+    if (type === 'PST') coeff = 0.93;
+    if (type === 'FTS') {
+      coeff = 1.00;
+      state.ftsValidated = true;
+    }
+
+    const calculatedRc = Math.round(rawVal * coeff);
+    state.lastRc = calculatedRc;
+
+    let raidXP = 180;
+    if (velMins === 170) raidXP = 220;
+    if (velMins === 160) raidXP = 260;
+    if (velMins === 150) raidXP = 300;
+
+    const currentTierReq = LEVEL_MATRIX.find(t => t.lvl === state.level).rcReq;
+    if (state.level > 1 && calculatedRc < currentTierReq) {
+      triggerPenalty(250, `Combat Rating (${calculatedRc}) dropped below Level ${state.level} threshold (${currentTierReq})`);
+    } else {
+      if (calculatedRc > state.highestRc) {
+        state.highestRc = calculatedRc;
+      }
+      awardXP(raidXP, `${type} Simulation Cleared (Rc:${calculatedRc})`, false);
+    }
+
+    document.getElementById('raidRawInput').value = '';
+    evaluateLevelProgression(true);
+    renderAll();
+  }
+
+  function claimPostRaidAutopsy() {
+    awardXP(250, 'Mandatory Post-Raid Error Autopsy Completed', true);
+  }
+
+  function toggleQuest(id) {
+    const q = state.quests.find(item => item.id === id);
+    if (!q) return;
+    q.done = !q.done;
+
+    if (q.done) {
+      awardXP(q.xp, q.title, true);
+      const coreQuests = state.quests.filter(item => item.core);
+      if (coreQuests.every(item => item.done) && !state.todayComboClaimed) {
+        state.todayComboClaimed = true;
+        setTimeout(() => {
+          awardXP(60, 'Daily All-Sector Full Clear Combo Bonus', false);
+        }, 700);
+      }
+    } else {
+      state.xp = Math.max(0, state.xp - q.xp);
+      state.history7Days[state.history7Days.length - 1].xp -= q.xp;
+    }
+    saveState();
+    renderAll();
+  }
+
+  function addCustomQuest() {
+    const titleEl = document.getElementById('newQuestTitle');
+    const xpEl = document.getElementById('newQuestXP');
+    const title = titleEl.value.trim();
+    const xp = parseInt(xpEl.value, 10) || 50;
+    if (!title) return;
+
+    state.quests.push({
+      id: 'custom_' + Date.now(),
+      title: title,
+      sub: 'Tactical Injected Operation',
+      xp: xp,
+      done: false,
+      core: false
+    });
+    titleEl.value = '';
+    saveState();
+    renderAll();
+  }
+
+  function completeDayCycle() {
+    const completedCore = state.quests.filter(q => q.core && q.done).length;
+    if (completedCore === 0 && !state.medBay && !state.boardFortress) {
+      triggerPenalty(80, 'Zero Core Sectors Cleared at End of Day');
+    } else {
+      state.streak += 1;
+      speakFriday(`Day cycle archived, Boss. Streak extended to ${state.streak} days.`);
+    }
+
+    state.quests.forEach(q => q.done = false);
+    state.todayComboClaimed = false;
+    state.history7Days.shift();
+    state.history7Days.push({ day: `D+${state.streak}`, xp: 0 });
+    saveState();
+    renderAll();
+  }
+
+  function toggleMedBay() {
+    state.medBay = !state.medBay;
+    speakFriday(state.medBay ? 'Med-Bay engaged, Boss. Zero XP penalties today.' : 'Med-Bay stasis deactivated.');
+    saveState();
+    renderAll();
+  }
+
+  function toggleBoardFortress() {
+    state.boardFortress = !state.boardFortress;
+    speakFriday(state.boardFortress ? 'Board Fortress Protocol active.' : 'Board Fortress deactivated.');
+    saveState();
+    renderAll();
+  }
+
+  function toggleLockdown() {
+    document.body.classList.toggle('lockdown-active');
+  }
+
+  const synth = window.speechSynthesis;
+  let voices = [];
+  if (synth) {
+    const loadVoices = () => { voices = synth.getVoices(); };
+    loadVoices();
+    if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+  }
+
+  function speakFriday(text) {
+    document.getElementById('fridayReadout').innerHTML = `<b style="color:var(--amber);">FRIDAY:</b> "${text}"`;
+    if (!synth) return;
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    const preferred = voices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Ryan') || v.lang === 'en-GB');
+    if (preferred) utter.voice = preferred;
+    utter.pitch = 0.92;
+    utter.rate = 1.04;
+
+    const reactor = document.getElementById('arcReactorBtn');
+    utter.onstart = () => reactor.classList.add('speaking');
+    utter.onend = () => reactor.classList.remove('speaking');
+    synth.speak(utter);
+  }
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  if (SpeechRec) {
+    recognition = new SpeechRec();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.onstart = () => {
+      document.getElementById('arcReactorBtn').classList.add('listening');
+      document.getElementById('fridayReadout').innerHTML = `<b style="color:var(--cyan);">LISTENING:</b> Speak command...`;
+    };
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      document.getElementById('fridayQueryInput').value = transcript;
+      processFridayIntent(transcript);
+    };
+    recognition.onend = () => {
+      document.getElementById('arcReactorBtn').classList.remove('listening');
+    };
+  }
+
+  function triggerVoiceRecognition() {
+    if (recognition) {
+      try { recognition.start(); } catch (e) {}
+    } else {
+      speakFriday('Voice recognition requires Chrome or Edge, Boss.');
+    }
+  }
+
+  function handleFridayCommand() {
+    const input = document.getElementById('fridayQueryInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    processFridayIntent(text);
+  }
+
+  async function processFridayIntent(rawText) {
+    const lower = rawText.toLowerCase();
+    const timerMatch = lower.match(/(\d+)\s*(minute|minutes|min|mins|hour|hours)/i);
+    if (lower.includes('timer') || lower.includes('sprint') || timerMatch) {
+      if (timerMatch) {
+        let mins = parseInt(timerMatch[1], 10);
+        if (timerMatch[2].startsWith('hour')) mins *= 60;
+        let label = 'TACTICAL SPRINT';
+        const nameMatch = rawText.match(/(?:named|called|for|name)\s+([a-zA-Z0-9\s\-]+)$/i);
+        if (nameMatch && nameMatch[1]) {
+          label = nameMatch[1].replace(/^\d+\s*(minutes|minute|mins|min)\s*/i, '').trim().toUpperCase();
+        }
+        startTacticalTimer(mins, label || 'TACTICAL SPRINT');
+        speakFriday(`Initiating ${mins} minute timer for${label}.`);
+        return;
+      }
+    }
+
+    if (lower.includes('schedule') || lower.includes('plan') || lower.includes('upcoming')) {
+      const dayMatch = lower.match(/(\d+)\s*day/);
+      checkUpcomingSchedule(dayMatch ? parseInt(dayMatch[1], 10) : 7);
+      return;
+    }
+
+    if (lower.includes('weather') || lower.includes('temperature')) {
+      fetchWeatherBriefing();
+      return;
+    }
+
+    if (lower === 'status' || lower.includes('briefing')) {
+      runMorningBriefing();
+      return;
+    }
+
+    if (state.geminiKey) {
+      document.getElementById('fridayReadout').innerHTML = `<b style="color:var(--purple);">FRIDAY NEURAL LINK:</b> Computing...`;
+      try {
+        const sysPrompt = `You are FRIDAY, tactical AI for Batcomputer. Address user as "Boss". Never use "NEET" or "marks". Crisp, under 3 sentences.`;
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: `${sysPrompt}\n\nQuery:${rawText}` }] }] })
+        });
+        const data = await res.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Neural response corrupted.';
+        speakFriday(reply.replace(/[*#`]/g, ''));
+      } catch (err) {
+        speakFriday('Neural link failed.');
+      }
+    } else {
+      speakFriday(`Command logged: "${rawText}". Click Neural Key to paste your Gemini API key.`);
+    }
+  }
+
+  function runMorningBriefing() {
+    const pending = state.quests.filter(q => !q.done).length;
+    const tierObj = LEVEL_MATRIX.find(t => t.lvl === state.level);
+    speakFriday(`Level ${state.level}: ${tierObj.title}. XP: ${state.xp}. Peak Rc: ${state.highestRc}. ${pending} duties remaining.`);
+  }
+
+  function checkUpcomingSchedule(daysAhead = 5) {
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const limit = new Date(now.getTime() + daysAhead * 86400000);
+    const upcoming = state.schedule.filter(ev => {
+      const d = new Date(ev.date + 'T00:00:00');
+      return d >= now && d <= limit;
+    });
+    if (upcoming.length === 0) {
+      speakFriday(`Recon clean for the next ${daysAhead} days, Boss.`);
+    } else {
+      const summary = upcoming.map(u => `${u.title} (${u.type}) on ${u.date}`).join(', ');
+      speakFriday(`Upcoming operations: ${summary}.`);
+    }
+  }
+
+  async function fetchWeatherBriefing() {
+    try {
+      const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=20.2961&longitude=85.8245&current_weather=true');
+      const data = await res.json();
+      if (data && data.current_weather) {
+        speakFriday(`Temperature is ${data.current_weather.temperature}°C, wind at ${data.current_weather.windspeed} km/h.`);
+      }
+    } catch (e) {
+      speakFriday('Weather satellite offline.');
+    }
+  }
+
+  function toggleApiSettings() {
+    const el = document.getElementById('apiSettingsDrawer');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function saveGeminiKey() {
+    state.geminiKey = document.getElementById('geminiKeyInput').value.trim();
+    saveState();
+    toggleApiSettings();
+    speakFriday('Gemini neural link key stored.');
+  }
+
+  function updateDoomsdayClock() {
+    const diff = Math.max(0, ZERO_HOUR_DATE - Date.now());
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+    const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+    const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+    document.getElementById('doomsdayClock').innerText = `${d} DAYS : ${h} HRS : ${m} MINS : ${s} SECS`;
+  }
+  setInterval(updateDoomsdayClock, 1000);
+  updateDoomsdayClock();
+
+  let timerLoop = null;
+  function startTacticalTimer(mins, label) {
+    state.timerLabel = label;
+    state.timerEnd = Date.now() + mins * 60 * 1000;
+    saveState();
+    runTimerInterval();
+  }
+
+  function startCustomInputTimer() {
+    const mins = parseInt(document.getElementById('customTimerMins').value, 10);
+    const name = document.getElementById('customTimerName').value.trim() || 'CUSTOM OPERATION';
+    if (!mins || mins <= 0) return;
+    startTacticalTimer(mins, name.toUpperCase());
+    speakFriday(`Timer armed for ${mins} minutes: ${name}.`);
+  }
+
+  function resetTacticalTimer() {
+    state.timerEnd = null;
+    state.timerLabel = 'STANDBY PROTOCOL';
+    saveState();
+    if (timerLoop) clearInterval(timerLoop);
+    document.getElementById('mainTimerDisplay').innerText = '00:00:00';
+    document.getElementById('activeTimerTitle').innerText = state.timerLabel;
+  }
+
+  function runTimerInterval() {
+    if (timerLoop) clearInterval(timerLoop);
+    timerLoop = setInterval(() => {
+      if (!state.timerEnd) { clearInterval(timerLoop); return; }
+      const rem = Math.max(0, Math.floor((state.timerEnd - Date.now()) / 1000));
+      document.getElementById('activeTimerTitle').innerText = state.timerLabel;
+      const hrs = Math.floor(rem / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((rem % 3600) / 60).toString().padStart(2, '0');
+      const secs = (rem % 60).toString().padStart(2, '0');
+      document.getElementById('mainTimerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+      if (rem <= 0) {
+        clearInterval(timerLoop);
+        state.timerEnd = null;
+        saveState();
+        playLevelUpFanfare();
+        speakFriday('Timer concluded, Boss.');
+      }
+    }, 1000);
+  }
+
+  let ytPlayer = null;
+  function initYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
+
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('ytPlayerContainer', {
+      videoId: state.ytVideoId,
+      playerVars: { autoplay: 1, loop: 1, playlist: state.ytVideoId, controls: 1, mute: 1, modestbranding: 1, rel: 0 },
+      events: { onReady: (e) => { e.target.mute(); e.target.playVideo(); } }
+    });
+  };
+
+  function ytTogglePlay() {
+    if (!ytPlayer || !ytPlayer.getPlayerState) return;
+    if (ytPlayer.getPlayerState() === 1) {
+      ytPlayer.pauseVideo();
+      document.getElementById('streamStateLabel').innerText = 'PAUSED';
+    } else {
+      ytPlayer.playVideo();
+      document.getElementById('streamStateLabel').innerText = 'ONLINE';
+    }
+  }
+
+  function ytToggleMute() {
+    if (!ytPlayer || !ytPlayer.isMuted) return;
+    if (ytPlayer.isMuted()) {
+      ytPlayer.unMute();
+      document.getElementById('ytMuteBtn').innerText = '🔊 MUTE';
+    } else {
+      ytPlayer.mute();
+      document.getElementById('ytMuteBtn').innerText = '🔇 UNMUTE';
+    }
+  }
+
+  function toggleStreamMinimize() {
+    document.getElementById('streamViewport').classList.toggle('minimized');
+  }
+
+  function loadCustomYouTube() {
+    const raw = document.getElementById('customYtInput').value.trim();
+    if (!raw) return;
+    let vid = raw;
+    const match = raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    if (match && match[1]) vid = match[1];
+    state.ytVideoId = vid;
+    saveState();
+    if (ytPlayer && ytPlayer.loadVideoById) ytPlayer.loadVideoById(vid);
+  }
+
+  function logAutopsyDefect(type) {
+    state.defects[type] = (state.defects[type] || 0) + 1;
+    awardXP(25, `Autopsy Defect (${type.toUpperCase()})`, false);
+  }
+
+  let blitzInterval = null;
+  let blitzSec = 35;
+  let blitzCount = 0;
+  function toggleBlitzPacer() {
+    const btn = document.getElementById('blitzToggleBtn');
+    if (blitzInterval) {
+      clearInterval(blitzInterval);
+      blitzInterval = null;
+      btn.innerText = 'ENGAGE';
+    } else {
+      btn.innerText = 'PAUSE';
+      blitzInterval = setInterval(() => {
+        blitzSec--;
+        document.getElementById('blitzTimerReadout').innerText = `${blitzSec}s`;
+        if (blitzSec <= 0) {
+          blitzCount++;
+          blitzSec = 35;
+          playGauntletDing(false);
+          document.getElementById('blitzCounter').innerText = `Q: ${blitzCount}`;
+        }
+      }, 1000);
+    }
+  }
+
+  function resetBlitzPacer() {
+    if (blitzInterval) clearInterval(blitzInterval);
+    blitzInterval = null;
+    blitzSec = 35;
+    blitzCount = 0;
+    document.getElementById('blitzTimerReadout').innerText = '35s';
+    document.getElementById('blitzCounter').innerText = 'Q: 0';
+    document.getElementById('blitzToggleBtn').innerText = 'ENGAGE';
+  }
+
+  let currentFormula = null;
+  function drawRandomFormula() {
+    currentFormula = FORMULA_VAULT[Math.floor(Math.random() * FORMULA_VAULT.length)];
+    document.getElementById('formulaPromptBox').innerText = currentFormula.q;
+    const ans = document.getElementById('formulaAnswerBox');
+    ans.style.display = 'none';
+    ans.innerText = currentFormula.a;
+  }
+  function revealFormula() {
+    if (!currentFormula) drawRandomFormula();
+    document.getElementById('formulaAnswerBox').style.display = 'block';
+  }
+  function masterFormula() {
+    if (!currentFormula) return;
+    awardXP(15, 'Formula Mastered', false);
+    drawRandomFormula();
+  }
+
+  function liquidateBacklog(subj, xpBounty) {
+    if (state.backlogs[subj] > 0) {
+      state.backlogs[subj]--;
+      awardXP(xpBounty, `Backlog (${subj.toUpperCase()})`, true);
+    } else {
+      speakFriday(`Zero backlog in ${subj.toUpperCase()}.`);
+    }
+  }
+
+  function updateRadar() {
+    const p = parseInt(document.getElementById('rad-p').value, 10);
+    const pc = parseInt(document.getElementById('rad-pc').value, 10);
+    const oc = parseInt(document.getElementById('rad-oc').value, 10);
+    const b = parseInt(document.getElementById('rad-b').value, 10);
+    const pts = `50,${50 - p} ${50 + pc},50 50,${50 + oc} ${50 - b},50`;
+    document.getElementById('radarPolygon').setAttribute('points', pts);
+  }
+
+  let focusNode = null;
+  let focusGain = null;
+  function toggleFocusAudio(mode) {
+    const ctx = getAudioCtx();
+    if (focusNode) {
+      try { focusNode.stop(); focusNode.disconnect(); } catch (e) {}
+      focusNode = null;
+      document.getElementById('freqStatus').innerText = 'OFF';
+      return;
+    }
+    focusGain = ctx.createGain();
+    focusGain.gain.value = 0.08;
+    focusGain.connect(ctx.destination);
+
+    if (mode === 'drone') {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = 432;
+      osc.connect(focusGain);
+      osc.start();
+      focusNode = osc;
+      document.getElementById('freqStatus').innerText = '432Hz';
+    } else {
+      const bufferSize = ctx.sampleRate * 2;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        data[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      noise.loop = true;
+      noise.connect(focusGain);
+      noise.start();
+      focusNode = noise;
+      document.getElementById('freqStatus').innerText = 'BROWN NOISE';
+    }
+  }
+
+  function engageWarRoomSync() {
+    startTacticalTimer(180, 'WAR-ROOM 180m LOCKDOWN');
+    document.body.classList.add('lockdown-active');
+    speakFriday('War-Room Simulator engaged. 180 minutes.');
+  }
+
+  function addScheduleEvent() {
+    const d = document.getElementById('schedDateInput').value;
+    const t = document.getElementById('schedTitleInput').value.trim();
+    const ty = document.getElementById('schedTypeInput').value;
+    if (!d || !t) return;
+    state.schedule.push({ date: d, title: t, type: ty });
+    state.schedule.sort((a, b) => a.date.localeCompare(b.date));
+    document.getElementById('schedTitleInput').value = '';
+    saveState();
+    renderAll();
+  }
+
+  function removeScheduleEvent(idx) {
+    state.schedule.splice(idx, 1);
+    saveState();
+    renderAll();
+  }
+
+  function applyVisualTheme() {
+    const override = document.getElementById('themeOverrideSelect').value;
+    const activeLvl = override === 'auto' ? state.level : parseInt(override, 10);
+    document.body.className = `lvl-${activeLvl}`;
+    if (state.boardFortress) document.getElementById('fortressBtn').classList.add('active-mode');
+    else document.getElementById('fortressBtn').classList.remove('active-mode');
+
+    if (state.medBay) document.getElementById('medbayBtn').classList.add('medbay-active');
+    else document.getElementById('medbayBtn').classList.remove('medbay-active');
+  }
+
+  function renderAll() {
+    applyVisualTheme();
+
+    const curTier = LEVEL_MATRIX.find(t => t.lvl === state.level);
+    const nextTier = LEVEL_MATRIX.find(t => t.lvl === Math.min(10, state.level + 1));
+
+    document.getElementById('topLevelBadge').innerText = `[LVL ${curTier.lvl}: ${curTier.title}]`;
+    document.getElementById('streakDays').innerText = `${state.streak} Active Day${state.streak > 1 ? 's' : ''}`;
+    document.getElementById('topRcDisplay').innerText = state.highestRc;
+
+    if (state.level === 10) {
+      document.getElementById('xpTextReadout').innerText = `SOVEREIGN APEX: ${state.xp.toLocaleString()} XP`;
+      document.getElementById('rcGateReadout').innerText = `ALL GATES CLEARED (Rc: ${state.highestRc})`;
+      document.getElementById('xpBarFill').style.width = '100%';
+    } else {
+      const pct = Math.min(100, Math.round((state.xp / nextTier.xpReq) * 100));
+      document.getElementById('xpTextReadout').innerText = `CURRENT XP: ${state.xp.toLocaleString()} / ${nextTier.xpReq.toLocaleString()} XP TO LEVEL ${nextTier.lvl}`;
+      document.getElementById('xpBarFill').style.width = `${pct}%`;
+
+      const rcMet = state.highestRc >= nextTier.rcReq;
+      document.getElementById('rcGateReadout').innerHTML = rcMet
+        ? `<span style="color:var(--emerald);">✓ RC KEY VERIFIED (${state.highestRc} ≥ ${nextTier.rcReq})</span>`
+        : `NEXT GATE KEY: Rc ≥ ${nextTier.rcReq} (Current: ${state.highestRc})`;
+
+      const surplus = Math.max(0, state.xp - nextTier.xpReq);
+      document.getElementById('surplusStatus').innerText = surplus > 0
+        ? `⚡ SURPLUS: +${surplus.toLocaleString()} XP`
+        : `Surplus Reserve: 0 XP`;
+    }
+
+    document.getElementById('boardFortressPanel').style.display = state.boardFortress ? 'block' : 'none';
+
+    const qContainer = document.getElementById('coreQuestList');
+    qContainer.innerHTML = '';
+    let securedCount = 0;
+    state.quests.forEach(q => {
+      if (q.done) securedCount++;
+      const div = document.createElement('div');
+      div.className = `quest-card ${q.done ? 'completed' : ''}`;
+      div.innerHTML = `
+        <div class="quest-info">
+          <div class="quest-title">${q.title}</div>
+          <div class="quest-sub">${q.sub}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="xp-pill">+${q.xp} XP</span>
+          <button class="quest-check" onclick="toggleQuest('${q.id}')">✓</button>
+        </div>
+      `;
+      qContainer.appendChild(div);
+    });
+    document.getElementById('dailyDutyCount').innerText = `${securedCount} / ${state.quests.length} SECURED`;
+
+    const graphEl = document.getElementById('telemetryGraph');
+    graphEl.innerHTML = '';
+    state.history7Days.forEach(item => {
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      const absXp = Math.abs(item.xp);
+      const heightPct = Math.min(100, Math.max(8, Math.round((absXp / 450) * 100)));
+      let colorClass = 'purple';
+      if (item.xp >= 300) colorClass = 'gold';
+      if (item.xp < 0) colorClass = 'crimson';
+
+      col.innerHTML = `
+        <div class="bar-val">${item.xp}</div>
+        <div class="bar-fill ${colorClass}" style="height:${heightPct}%;"></div>
+        <div class="bar-day">${item.day}</div>
+      `;
+      graphEl.appendChild(col);
+    });
+
+    const schedEl = document.getElementById('scheduleListContainer');
+    schedEl.innerHTML = '';
+    state.schedule.forEach((ev, idx) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:6px 8px; background:#05060a; border:1px solid rgba(255,255,255,0.06); border-radius:6px; font-size:11px;';
+      row.innerHTML = `
+        <div><b style="color:var(--amber);">[${ev.type}]</b> ${ev.date} — ${ev.title}</div>
+        <button class="tactical-btn danger" style="padding:2px 6px; font-size:9px;" onclick="removeScheduleEvent(${idx})">✕</button>
+      `;
+      schedEl.appendChild(row);
+    });
+
+    document.getElementById('def-calc').innerText = state.defects.calc || 0;
+    document.getElementById('def-ncert').innerText = state.defects.ncert || 0;
+    document.getElementById('def-formula').innerText = state.defects.formula || 0;
+    document.getElementById('def-panic').innerText = state.defects.panic || 0;
+
+    document.getElementById('bl-phy').innerText = state.backlogs.phy;
+    document.getElementById('bl-chem').innerText = state.backlogs.chem;
+    document.getElementById('bl-bio').innerText = state.backlogs.bio;
+    document.getElementById('totalBacklogBadge').innerText = `DEBT: ${state.backlogs.phy + state.backlogs.chem + state.backlogs.bio}`;
+
+    document.getElementById('trajRc').innerText = state.highestRc;
+    const gap = Math.max(0, 670 - state.highestRc);
+    document.getElementById('trajVerdict').innerText = gap === 0 ? 'SOVEREIGN 670+ ACHIEVED' : `${gap} points to Level 10 gate.`;
+
+    const sandboxUnlock = document.getElementById('sandboxUnlockToggle').checked;
+    for (let l = 2; l <= 10; l++) {
+      const card = document.getElementById(`mod-lvl-${l}`);
+      if (!card) continue;
+      const existingOverlay = card.querySelector('.module-lock-overlay');
+      if (existingOverlay) existingOverlay.remove();
+
+      if (!sandboxUnlock && state.level < l) {
+        const tierInfo = LEVEL_MATRIX.find(t => t.lvl === l);
+        const overlay = document.createElement('div');
+        overlay.className = 'module-lock-overlay';
+        overlay.innerHTML = `
+          <div class="lock-tag">🔒 LOCKED // LVL ${l}</div>
+          <div style="font-size:11px; font-weight:700; color:var(--text-main);">${tierInfo.title}</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Requires ${tierInfo.xpReq.toLocaleString()} XP & Rc ≥ ${tierInfo.rcReq}</div>
+        `;
+        card.appendChild(overlay);
+      }
+    }
+  }
+
+  function exportBackup() {
+    navigator.clipboard.writeText(JSON.stringify(state)).then(() => speakFriday('Backup copied to clipboard.'));
+  }
+
+  function importBackup() {
+    const raw = prompt('Paste backup JSON string:');
+    if (!raw) return;
+    try {
+      state = { ...state, ...JSON.parse(raw) };
+      saveState();
+      renderAll();
+      speakFriday('Backup restored successfully.');
+    } catch (e) {
+      alert('Invalid backup data.');
+    }
+  }
+
+  const canvas = document.getElementById('particleCanvas');
+  const pCtx = canvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  for (let i = 0; i < 38; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.8 + 0.5,
+      vy: -(Math.random() * 0.45 + 0.15),
+      alpha: Math.random() * 0.55 + 0.15
+    });
+  }
+
+  function animateParticles() {
+    pCtx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.y += p.vy;
+      if (p.y < 0) {
+        p.y = canvas.height;
+        p.x = Math.random() * canvas.width;
+      }
+      pCtx.beginPath();
+      pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      pCtx.fillStyle = `rgba(255, 183, 3, ${p.alpha})`;
+      pCtx.fill();
+    });
+    requestAnimationFrame(animateParticles);
+  }
+
+  loadState();
+  initYouTubeAPI();
+  animateParticles();
+  if (state.timerEnd && state.timerEnd > Date.now()) {
+    runTimerInterval();
+  }
+</script>
+</body>
+</html>
